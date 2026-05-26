@@ -1,0 +1,61 @@
+{
+  "name": "life-php/php-gen",
+  "description": "A modern PHP code generator that follows all PER standards and generates high-quality code.",
+  "type": "library",
+  "keywords": [
+    "php",
+    "generator",
+    "codegenerator",
+    "code"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/LifePHP/php-gen",
+  "authors": [
+    {
+      "name": "Antonín Jehlář",
+      "email": "tondajehlar@seznam.cz",
+      "role": "lead"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/LifePHP/php-gen/issues"
+  },
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=8.5"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^13.0",
+    "mockery/mockery": "^1.6",
+    "phpstan/phpstan": "^2.1",
+    "slevomat/coding-standard": "^8.28"
+  },
+  "config": {
+    "platform": {
+      "php": "8.5.3"
+    },
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "LifePhp\\PhpGen\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "LifePhp\\PhpGen\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "checks": [
+      "@phpstan",
+      "@phpcs"
+    ],
+    "phpcs": "vendor/bin/phpcs --standard=phpcs.xml src tests",
+    "phpcbf": "vendor/bin/phpcbf --standard=phpcs.xml src tests",
+    "phpstan": "vendor/bin/phpstan analyse --level=10 --memory-limit 2G src tests"
+  }
+}

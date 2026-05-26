@@ -1,0 +1,37 @@
+name: life-php-gen
+services:
+  appserver:
+    type: php:8.5
+    composer_version: 2-latest
+    globals:
+      composer-setup: true
+    overrides:
+      environment:
+        # Support debugging CLI with Xdebug.
+        PHP_IDE_CONFIG: "serverName=appserver"
+        XDEBUG_SESSION_START: lando
+        XDEBUG_MODE: 'debug,develop'
+        XDEBUG_START_WITH_REQUEST: yes
+tooling:
+  xdebug-on:
+    service: appserver
+    description: Enable xdebug for nginx.
+    cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && docker-php-ext-enable xdebug && pkill -o -USR2 php-fpm && echo "Xdebug enabled"
+    user: root
+  xdebug-off:
+    service: appserver
+    description: Disable xdebug for nginx.
+    cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm && echo "Xdebug disabled"
+    user: root
+  checks:
+    service: appserver
+    description: Run all checks
+    cmd: composer checks
+  composer:
+    service: appserver
+    description: Run composer
+    cmd: composer
+  php:
+    service: appserver
+    description: Run PHP command.
+    cmd: php

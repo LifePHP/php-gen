@@ -1,0 +1,9 @@
+parameters:
+	scanDirectories:
+		- src
+		- tests
+	ignoreErrors:
+		- '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(with)|(once)|(times)|(withArgs)\(\).#'
+	reportUnmatchedIgnoredErrors: false
+
+	level: 10
