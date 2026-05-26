@@ -35,7 +35,7 @@ established and stable. All planned elements are complete; the only remaining ga
 | `ArrayLiteral`         | ✅ Complete | Lazy type inference, cached, `ArrayKeyType::Both` for mixed keys                                                                  |
 | `ShapeLiteral`         | ✅ Complete | Lazy type inference, cached                                                                                                       |
 | `Visibility`           | ✅ Complete | Backed string enum: `Public`, `Protected`, `Private`; `rank()` for ordering                                                       |
-| `Property`             | ✅ Complete | Named constructors, abstract/readonly/static, asymmetric visibility (`setSetVisibility()`), runtime combination guard             |
+| `Property`             | ✅ Complete | Named constructors, abstract/readonly/static, asymmetric visibility (`setSetVisibility()`), PHP 8.4 hooks (`setGetHook`/`setSetHook`), runtime combination guard |
 | `Parameter`            | ✅ Complete | Named constructors, variadic/byRef/promoted, asymmetric visibility for promoted (`setSetVisibility()`), `isPromoted()` for Method |
 | `PhpFunction`          | ✅ Complete | Signature only, parameter order validation, full PHPDoc                                                                           |
 | `Method`               | ✅ Complete | Signature only, abstract/static/final, constructor inline body, deprecated                                                        |
@@ -53,6 +53,10 @@ established and stable. All planned elements are complete; the only remaining ga
 | `Traits/HasMethods`    | ✅ Complete | Mixin for ClassDef, TraitDef, EnumDef                                                                                             |
 | `Traits/HasUsedTraits` | ✅ Complete | Mixin for ClassDef, TraitDef, EnumDef                                                                                             |
 | `Traits/HasImplements` | ✅ Complete | Mixin for ClassDef, EnumDef                                                                                                       |
+| `Traits/HasAttributes` | ✅ Complete | Mixin for all elements; `addAttribute()`, `renderAttributes()`, `renderAttributesInline()`                                        |
+| `Attribute`            | ✅ Complete | `#[Name(args)]`; positional and named args; single-arg inline, multi-arg multiline with trailing comma                            |
+| `GetHook`              | ✅ Complete | PHP 8.4 `get` hook; `abstract()` → `get;`, `arrow(expr)` → `get => expr;`                                                        |
+| `SetHook`              | ✅ Complete | PHP 8.4 `set` hook; `abstract()` → `set;`, `arrow(expr, ?type, name)` → `set($type $name) => expr;`                              |
 | `PhpFile`              | ✅ Complete | `<?php`, `declare`, namespace, deduplicated use statements, alias conflict resolution                                             |
 
 ## Missing Infrastructure
