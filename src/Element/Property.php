@@ -26,6 +26,10 @@ class Property implements ElementInterface
 
     private ?Visibility $setVisibility = null;
 
+    private ?GetHook $getHook = null;
+
+    private ?SetHook $setHook = null;
+
     private function __construct(
         private readonly Visibility $visibility,
         private readonly string $name,
@@ -87,6 +91,20 @@ class Property implements ElementInterface
         }
 
         $this->setVisibility = $setVisibility;
+
+        return $this;
+    }
+
+    public function setGetHook(GetHook $hook): self
+    {
+        $this->getHook = $hook;
+
+        return $this;
+    }
+
+    public function setSetHook(SetHook $hook): self
+    {
+        $this->setHook = $hook;
 
         return $this;
     }
@@ -155,6 +173,18 @@ class Property implements ElementInterface
             }
         }
 
+        if ($this->getHook !== null) {
+            foreach ($this->getHook->getUses() as $use) {
+                $retVal[] = $use;
+            }
+        }
+
+        if ($this->setHook !== null) {
+            foreach ($this->setHook->getUses() as $use) {
+                $retVal[] = $use;
+            }
+        }
+
         return $retVal;
     }
 
@@ -194,6 +224,20 @@ class Property implements ElementInterface
 
         if ($this->value !== null) {
             $rendered .= ' = ' . $this->value->render();
+        }
+
+        if ($this->getHook !== null || $this->setHook !== null) {
+            $hookLines = [];
+
+            if ($this->getHook !== null) {
+                $hookLines[] = $this->getHook->render();
+            }
+
+            if ($this->setHook !== null) {
+                $hookLines[] = $this->setHook->render();
+            }
+
+            $rendered .= "\n{\n    " . implode("\n    ", $hookLines) . "\n}";
         }
 
         $attrBlock = $this->renderAttributes();
