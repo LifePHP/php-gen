@@ -13,17 +13,23 @@ interface TypeInterface extends ElementInterface {}
 
 A backed string enum covering all PHP built-in scalar and special types:
 
-| Case                 | Renders as |
-|----------------------|------------|
-| `ScalarType::String` | `string`   |
-| `ScalarType::Int`    | `int`      |
-| `ScalarType::Float`  | `float`    |
-| `ScalarType::Bool`   | `bool`     |
-| `ScalarType::Null`   | `null`     |
-| `ScalarType::True`   | `true`     |
-| `ScalarType::False`  | `false`    |
-| `ScalarType::Void`   | `void`     |
-| `ScalarType::Mixed`  | `mixed`    |
+| Case                   | Renders as |
+|------------------------|------------|
+| `ScalarType::String`   | `string`   |
+| `ScalarType::Int`      | `int`      |
+| `ScalarType::Float`    | `float`    |
+| `ScalarType::Bool`     | `bool`     |
+| `ScalarType::Null`     | `null`     |
+| `ScalarType::True`     | `true`     |
+| `ScalarType::False`    | `false`    |
+| `ScalarType::Void`     | `void`     |
+| `ScalarType::Mixed`    | `mixed`    |
+| `ScalarType::Never`    | `never`    |
+| `ScalarType::Callable` | `callable` |
+| `ScalarType::Object`   | `object`   |
+| `ScalarType::Self`     | `self`     |
+| `ScalarType::Static`   | `static`   |
+| `ScalarType::Parent`   | `parent`   |
 
 `getUses()` returns `[]` — scalars require no imports. `getDocCommentPart()` delegates to `render()`.
 
@@ -137,16 +143,30 @@ $type->getUses();           // [UseStatementClass('Countable'), UseStatementClas
 
 ## UnionType
 
-Represents a PHP union type (`A|B|C`).
+Represents a PHP union type (`A|B|C`). Supports PHP 8.2 DNF types (`(A&B)|C`) by nesting
+`IntersectionType` members — they are wrapped in parentheses automatically.
 
-> **Status:** Stub — `getUses()` and `render()` are not yet implemented. See [Roadmap](roadmap.md).
+```php
+$type = (new UnionType())->add(ScalarType::Null)->add(new ClassType(User::class));
+$type->render();            // "null|User"
+$type->getUses();           // [UseStatementClass('User')]
+
+// DNF type (PHP 8.2):
+$dnf = new UnionType();
+$dnf->add((new IntersectionType())->add(new ClassType(Countable::class))->add(new ClassType(Iterator::class)));
+$dnf->add(ScalarType::Null);
+$dnf->render(); // "(Countable&Iterator)|null"
+```
+
+`add()` returns `self` — calls are chainable.
 
 ## Combining Types
 
 Types compose naturally. `getUses()` always returns the full flat list of imports needed by the entire subtree:
 
 ```php
-$type = new UnionType(); // once implemented
-// ScalarType::Null | new ClassType(User::class)
+$type = (new UnionType())
+    ->add(ScalarType::Null)
+    ->add(new ClassType(User::class));
 // getUses() → [UseStatementClass('User')]
 ```
