@@ -22,6 +22,7 @@ class TraitDef extends AbstractClassLikeDef
     {
         return array_merge(
             $this->toClassType()->getUses(),
+            $this->collectAttributeUses(),
             $this->collectUsedTraitUses(),
             $this->collectPropertyUses(),
             $this->collectMethodUses(),
@@ -44,8 +45,6 @@ class TraitDef extends AbstractClassLikeDef
             ? $declaration . "\n{\n}"
             : $declaration . "\n{\n" . implode("\n\n", $members) . "\n}";
 
-        $docComment = $this->getDocCommentPart();
-
-        return $docComment !== '' ? $docComment . "\n" . $body : $body;
+        return $this->wrapWithDocAndAttributes($body);
     }
 }

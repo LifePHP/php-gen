@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace LifePhp\PhpGen\Element;
 
+use LifePhp\PhpGen\Element\Traits\HasAttributes;
 use LifePhp\PhpGen\Element\Type\TypeInterface;
 use LogicException;
 use Override;
 
 class Method implements ElementInterface
 {
+    use HasAttributes;
+
     /**
      * @var Parameter[]
      */
@@ -110,7 +113,7 @@ class Method implements ElementInterface
     #[Override]
     public function getUses(): array
     {
-        $retVal = [];
+        $retVal = $this->collectAttributeUses();
 
         foreach ($this->returnType->getUses() as $use) {
             $retVal[] = $use;
@@ -159,7 +162,11 @@ class Method implements ElementInterface
         $parts[] = 'function';
         $parts[] = $this->name;
 
-        return sprintf('%s(%s): %s;', implode(' ', $parts), $parameters, $this->returnType->render());
+        $result = sprintf('%s(%s): %s;', implode(' ', $parts), $parameters, $this->returnType->render());
+
+        $attrBlock = $this->renderAttributes();
+
+        return $attrBlock !== '' ? $attrBlock . "\n" . $result : $result;
     }
 
     #[Override]
@@ -186,17 +193,19 @@ class Method implements ElementInterface
 
         $signature = implode(' ', $parts);
 
-        if ($this->abstract) {
-            return sprintf('%s(%s): %s;', $signature, $renderedParams, $this->returnType->render());
-        }
-
         $isMultiline = count($this->parameters) > 1;
 
-        if ($this->name === '__construct' && $isMultiline) {
-            return sprintf("%s(%s): %s {}", $signature, $renderedParams, $this->returnType->render());
+        if ($this->abstract) {
+            $result = sprintf('%s(%s): %s;', $signature, $renderedParams, $this->returnType->render());
+        } elseif ($this->name === '__construct' && $isMultiline) {
+            $result = sprintf("%s(%s): %s {}", $signature, $renderedParams, $this->returnType->render());
+        } else {
+            $result = sprintf("%s(%s): %s\n{\n}", $signature, $renderedParams, $this->returnType->render());
         }
 
-        return sprintf("%s(%s): %s\n{\n}", $signature, $renderedParams, $this->returnType->render());
+        $attrBlock = $this->renderAttributes();
+
+        return $attrBlock !== '' ? $attrBlock . "\n" . $result : $result;
     }
 
     private function buildParameters(): string

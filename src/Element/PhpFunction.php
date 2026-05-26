@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace LifePhp\PhpGen\Element;
 
+use LifePhp\PhpGen\Element\Traits\HasAttributes;
 use LifePhp\PhpGen\Element\Type\TypeInterface;
 use LogicException;
 use Override;
 
 class PhpFunction implements ElementInterface
 {
+    use HasAttributes;
+
     /**
      * @var Parameter[]
      */
@@ -35,7 +38,7 @@ class PhpFunction implements ElementInterface
     #[Override]
     public function getUses(): array
     {
-        $retVal = [];
+        $retVal = $this->collectAttributeUses();
 
         foreach ($this->returnType->getUses() as $use) {
             $retVal[] = $use;
@@ -97,11 +100,15 @@ class PhpFunction implements ElementInterface
             ? "\n    " . implode(",\n    ", $renderedParams) . ",\n"
             : implode('', $renderedParams);
 
-        return sprintf(
+        $result = sprintf(
             "function %s(%s): %s\n{\n}",
             $this->name,
             $parameters,
             $this->returnType->render(),
         );
+
+        $attrBlock = $this->renderAttributes();
+
+        return $attrBlock !== '' ? $attrBlock . "\n" . $result : $result;
     }
 }

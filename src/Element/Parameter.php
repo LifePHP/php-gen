@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace LifePhp\PhpGen\Element;
 
 use LifePhp\PhpGen\Element\Literal\LiteralInterface;
+use LifePhp\PhpGen\Element\Traits\HasAttributes;
 use LifePhp\PhpGen\Element\Type\TypeInterface;
 use LogicException;
 use Override;
 
 class Parameter implements ElementInterface
 {
+    use HasAttributes;
+
     private bool $variadic = false;
 
     private bool $byReference = false;
@@ -145,7 +148,7 @@ class Parameter implements ElementInterface
     #[Override]
     public function getUses(): array
     {
-        $retVal = [];
+        $retVal = $this->collectAttributeUses();
 
         if ($this->type !== null) {
             foreach ($this->type->getUses() as $use) {
@@ -198,6 +201,8 @@ class Parameter implements ElementInterface
             $rendered .= ' = ' . $this->value->render();
         }
 
-        return $rendered;
+        $attrBlock = $this->renderAttributes();
+
+        return $attrBlock !== '' ? $attrBlock . "\n" . $rendered : $rendered;
     }
 }

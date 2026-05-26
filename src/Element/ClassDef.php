@@ -147,6 +147,7 @@ class ClassDef extends AbstractClassLikeDef
     {
         return array_merge(
             $this->toClassType()->getUses(),
+            $this->collectAttributeUses(),
             $this->extends !== null ? $this->extends->getUses() : [],
             $this->collectImplementsUses(),
             $this->collectUsedTraitUses(),
@@ -207,9 +208,7 @@ class ClassDef extends AbstractClassLikeDef
             ? $declaration . "\n{\n}"
             : $declaration . "\n{\n" . implode("\n\n", $members) . "\n}";
 
-        $docComment = $this->getDocCommentPart();
-
-        return $docComment !== '' ? $docComment . "\n" . $body : $body;
+        return $this->wrapWithDocAndAttributes($body);
     }
 
     private function isReachableFrom(ClassDef $start): bool

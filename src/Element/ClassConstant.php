@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace LifePhp\PhpGen\Element;
 
 use LifePhp\PhpGen\Element\Literal\LiteralInterface;
+use LifePhp\PhpGen\Element\Traits\HasAttributes;
 use LifePhp\PhpGen\Element\Type\ConstantType;
 use Override;
 
 class ClassConstant implements ElementInterface
 {
+    use HasAttributes;
+
     public function __construct(
         private readonly Visibility $visibility,
         private readonly ConstantType $type,
@@ -31,7 +34,7 @@ class ClassConstant implements ElementInterface
     #[Override]
     public function getUses(): array
     {
-        return [];
+        return $this->collectAttributeUses();
     }
 
     #[Override]
@@ -43,12 +46,16 @@ class ClassConstant implements ElementInterface
     #[Override]
     public function render(): string
     {
-        return sprintf(
+        $rendered = sprintf(
             '%s const %s %s = %s',
             $this->visibility->value,
             $this->type->render(),
             $this->name,
             $this->value->render(),
         );
+
+        $attrBlock = $this->renderAttributes();
+
+        return $attrBlock !== '' ? $attrBlock . "\n" . $rendered : $rendered;
     }
 }

@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace LifePhp\PhpGen\Element;
 
+use LifePhp\PhpGen\Element\Traits\HasAttributes;
 use LifePhp\PhpGen\Element\Type\ClassType;
 use Override;
 
 abstract class AbstractClassLikeDef implements ElementInterface
 {
+    use HasAttributes;
+
     private ?string $docComment = null;
 
     public function __construct(
@@ -75,6 +78,15 @@ abstract class AbstractClassLikeDef implements ElementInterface
         );
 
         return $sorted;
+    }
+
+    protected function wrapWithDocAndAttributes(string $body): string
+    {
+        $attrBlock = $this->renderAttributes();
+        $docComment = $this->getDocCommentPart();
+        $result = $docComment !== '' ? $docComment . "\n" . $body : $body;
+
+        return $attrBlock !== '' ? $attrBlock . "\n" . $result : $result;
     }
 
     protected function indent(string $code): string
