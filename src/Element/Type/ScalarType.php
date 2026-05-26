@@ -20,6 +20,9 @@ enum ScalarType: string implements TypeInterface
     case Never = 'never';
     case Callable = 'callable';
     case Object = 'object';
+    case Self = 'self';
+    case Static = 'static';
+    case Parent = 'parent';
 
     #[Override]
     public function getUses(): array
